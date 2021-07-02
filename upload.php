@@ -1,14 +1,23 @@
 <?php
-if(isset($_GET['url'])){
+if(isset($_GET['url']) && isset($_GET['name'])){
+  $name = trim($_GET['name']);
   $url = trim($_GET['url']);
   $headers = get_headers($url, 1);
   if(isset($headers['Content-Disposition'])){
     $cdp = $headers['Content-Disposition'];
     preg_match_all("/[^\'\']+$/", $cdp, $ofname);
 
-    $base_name = $ofname[0][0];
+    if(empty($name)){
+      $base_name = $ofname[0][0];
+    } else {
+      $base_name = $name;
+    }
   } else {
-     $base_name = basename($url); 
+     if(empty($name)){
+       $base_name = basename($url);
+     } else {
+      $base_name = $name;
+    } 
   }
   downloadd($url, $base_name);
 }
@@ -45,7 +54,8 @@ function downloadd($url, $outFileName)
   </head>
   <body>
     <form method="get">
-      <input type="url" name="url" />
+      <input type="text" name="name" placeholder="File name"/><br>
+      <input type="url" name="url" placeholder="File link"/><br>
       <input type="submit" value="Download"/>
     </form>
   </body>
